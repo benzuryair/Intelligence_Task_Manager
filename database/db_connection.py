@@ -12,7 +12,7 @@ class connection:
             password="1234",
             database="intelligence-mysql",
         )
-
+#
     @staticmethod
     def create_database():
         with connection.get_connection() as conn:
