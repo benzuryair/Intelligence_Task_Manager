@@ -79,10 +79,15 @@ class AgentDB:
     @staticmethod
     def get_agent_performance(id: int):
         agent = AgentDB.get_agent_by_id(id)
+        if not agent:
+            return {"message": f"No agent with ID: {id} exists"}
         completed = agent["completed_missions"]
         failed = agent["failed_missions"]
         total = completed + failed
-        success_rate = (completed / total) * 100
+        if total > 0:
+            success_rate = (completed / total) * 100
+        else:
+            success_rate = 0.0
         summary_dict = {
             "completed": completed,
             "failed": failed,
