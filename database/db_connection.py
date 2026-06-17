@@ -17,12 +17,6 @@ class connection:
     def create_database():
         with connection.get_connection() as conn:
             with conn.cursor() as cursor:
-                query = """--sql CREATE database"""
-
-    @staticmethod
-    def create_database():
-        with connection.get_connection() as conn:
-            with conn.cursor() as cursor:
                 query = """CREATE DATABASE IF NOT EXISTS intelligence-mysql"""
                 cursor.execute(query)
                 conn.commit()
