@@ -1,6 +1,5 @@
 from database.db_connection import DBConnection
-from database.agent_db import AgentDB
-
+import logging
 
 def risk_level_check(difficulty: int, importance: int):
     risk_level = (difficulty * 2) + importance
@@ -21,6 +20,7 @@ class MissionDB:
         with DBConnection.get_connection() as conn:
             with conn.cursor(dictionary=True) as cursor:
                 query = """SELECT * FROM missions"""
+                logging.info("SQL query to return all tasks in a list")
                 cursor.execute(query)
                 rows = cursor.fetchall()
                 return rows
@@ -30,6 +30,7 @@ class MissionDB:
         with DBConnection.get_connection() as conn:
             with conn.cursor(dictionary=True) as cursor:
                 query = """SELECT * from missions WHERE id =%s"""
+                logging.info("SQL query to return a mission by ID")
                 cursor.execute(query, (id,))
                 row = cursor.fetchone()
                 return row
@@ -41,6 +42,7 @@ class MissionDB:
                 risk_level = risk_level_check(data["difficulty"], data["importance"])
                 query = """insert into missions(title, description, location, difficulty, importance, risk_level) values(%s, %s, %s, %s, %s, %s)"""
                 values = list(data.values()) + [risk_level]
+                logging.info("SQL query to create a new task")
                 cursor.execute(query, values)
                 new_id = cursor.lastrowid
                 conn.commit()
@@ -52,6 +54,7 @@ class MissionDB:
         with DBConnection.get_connection() as conn:
             with conn.cursor() as cursor:
                 query = """UPDATE missions SET status = 'ASSIGNED', assigned_agent_id = %s WHERE id = %s"""
+                logging.info("SQL query to associate a mission with an agent")
                 cursor.execute(query, (a_id, m_id))
                 changed = cursor.rowcount > 0
                 conn.commit()
@@ -62,6 +65,7 @@ class MissionDB:
         with DBConnection.get_connection() as conn:
             with conn.cursor() as cursor:
                 query = """UPDATE missions SET status = %s WHERE id = %s"""
+                logging.info("SQL query to update task status")
                 cursor.execute(query, (status, id))
                 changed = cursor.rowcount > 0
                 conn.commit()
@@ -73,6 +77,7 @@ class MissionDB:
             with conn.cursor(dictionary=True) as cursor:
                 query = """SELECT * FROM missions
                 WHERE (status = "ASSIGNED" or status = "IN_PROGRESS") and assigned_agent_id = %s"""
+                logging.info("SQL query Counter open tasks by agent")
                 cursor.execute(query, (id,))
                 rows = cursor.fetchall()
                 return rows
@@ -82,6 +87,7 @@ class MissionDB:
         with DBConnection.get_connection() as conn:
             with conn.cursor(dictionary=True) as cursor:
                 query = """SELECT COUNT(*) as 'total_tasks' FROM missions"""
+                logging.info("SQL query Count all the missions")
                 cursor.execute(query)
                 row = cursor.fetchone()
                 return row
@@ -93,6 +99,7 @@ class MissionDB:
                 query = """SELECT status AS Status, COUNT(*) as COUNT
                 FROM missions
                 where status = %s"""
+                logging.info("SQL query count by status")
                 cursor.execute(query, (status,))
                 row = cursor.fetchone()
                 return row
@@ -104,6 +111,7 @@ class MissionDB:
                 query = """SELECT COUNT(*) AS 'open_tasks' FROM missions 
                 WHERE status = "NEW" or status = "ASSIGNED" or status = "IN_PROGRESS"
                 """
+                logging.info("SQL query count by Open")
                 cursor.execute(query)
                 row = cursor.fetchone()
                 return row
@@ -115,6 +123,7 @@ class MissionDB:
                 query = """SELECT COUNT(*) AS 'critical_tasks' FROM missions 
                 WHERE risk_level = "CRITICAL"
                 """
+                logging.info("SQL query count by Critical risk level")
                 cursor.execute(query)
                 row = cursor.fetchone()
                 return row
@@ -125,6 +134,7 @@ class MissionDB:
             with conn.cursor(dictionary=True) as cursor:
                 query = """
                 SELECT * FROM agents ORDER BY completed_missions DESC LIMIT 1 """
+                logging.info("SQL query to get the best agent")
                 cursor.execute(query)
                 top_agent = cursor.fetchone()
                 if not top_agent:

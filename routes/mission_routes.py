@@ -15,14 +15,6 @@ class Mission(BaseModel):
     importance: int = Field(ge=1, le=10)
 
 
-class UpdateMission(BaseModel):
-    title: str | None = Field(default=None, max_length=50)
-    description: str | None = None
-    location: str | None = Field(default=None, max_length=50)
-    difficulty: int | None = Field(default=None, ge=1, le=10)
-    importance: int | None = Field(default=None, ge=1, le=10)
-
-
 @router.post("")
 def router_create_mission(body: Mission):
     logging.info("POST/missions")
