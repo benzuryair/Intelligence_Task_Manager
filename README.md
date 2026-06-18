@@ -103,6 +103,57 @@ This department is responsible for the information and operations of the tasks.
 |9| Only a task can be completed. IN_PROGRESS and changed to failed or completed status.  
 |10| Only a task with a status of NEW or ASSIGNED can be canceled — otherwise an error. 
 
+## Endpoint List
+
+
+### Agents endpoints  
+
+|Method| Endpoint| Description
+| :----- | ----------|------------|
+| [POST] | /agents  | Create a new agent|  
+|[GET] | /agents | Returns all agents|
+|[GET] |/agents/{id} | Returns agent by ID  
+|[PUT] | /agents/{id} | Agent update  
+| [PUT] | /agents/{id} | Agent deactivation  
+|[GET] | /agents/{id}/performance | Agent performance  
+
+
+### Missions endpoints
+ 
+|Method| Endpoint| Description
+| :----- | ----------|------------|
+| [POST] | /missions | Create a mission  
+| [GET] | /missions | Returns all missions  
+| [GET] | /missions/{id}  | Returns a mission by ID |
+| [PUT] | /missions/{id}/assign/{agent_id} | Assign a task to an agent|
+|[PUT] | /missions/{id}/start | start mission  
+| [PUT] | /missions/{id}/complete | finish mission  
+| [PUT] | /missions/{id}/fail  | Mission failed  
+| [PUT]  | /missions/{id}/cancel | Cancel mission |  
+
+### Reports endpoints
+
+|Method| Endpoint| Description
+| :----- | ----------|------------|
+|[GET] | /reports/summary |General system report  
+| [GET] | /reports/missions-by-status  |Tasks by status  
+| [GET] |  /reports/top-agent | The outstanding agent 
+
+## System flow
+
+The system starts with the ability to create an agent and create a task by making an HTTP request through the Fast API, which sends an SQL query to add information to its tables. After that, you can update the information you entered and you can request to see the information, and SQL will return it through the Fast API, including associating a task with the agent.
+
+
+HTTP request via Swagger to Fast API -> Fast API SQL query -> The SQL processes the query and responds as required -> The Fast API returns the required information to the user.
+
+
+
+
+
+
+
+
+
 
 ## Running instructions
 Run this line in a command prompt  
@@ -117,11 +168,11 @@ Run the following commands in the terminal inside the folder
 - venv\Scripts\activate
 - Fast API
 - uvicorn
-- mysql.connector
+- mysql.connector-python
 - pip install -r requirements.txt
 
 And run the main.py file to initialize the database and its tables.
-```py main.py```
+```py main.py```  
 
-
-`
+After all this, enter the URL attached below and select the desired options.
+```http://localhost:8080/docs#/```
