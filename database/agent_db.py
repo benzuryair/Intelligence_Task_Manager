@@ -1,11 +1,11 @@
-from database.db_connection import connection
+from database.db_connection import DBConnection
 
 
 class AgentDB:
 
     @staticmethod
     def get_all_agents():
-        with connection.get_connection() as conn:
+        with DBConnection.get_connection() as conn:
             with conn.cursor(dictionary=True) as cursor:
                 query = """SELECT * FROM agents"""
                 cursor.execute(query)
@@ -14,7 +14,7 @@ class AgentDB:
 
     @staticmethod
     def get_agent_by_id(id: int):
-        with connection.get_connection() as conn:
+        with DBConnection.get_connection() as conn:
             with conn.cursor(dictionary=True) as cursor:
                 query = """SELECT * from agents WHERE id =%s"""
                 cursor.execute(query, (id,))
@@ -23,10 +23,19 @@ class AgentDB:
 
     @staticmethod
     def create_agent(data: dict):
-        with connection.get_connection() as conn:
+        with DBConnection.get_connection() as conn:
             with conn.cursor() as cursor:
-                query = "insert into agents(name, specialty, is_active, agent_rank) values(%s, %s, %s, %s)"
-                values = list(data.values())
+                if "id" in data:
+                    data.pop("id")
+                if not data:
+                    return False
+                query = "INSERT INTO agents(name, specialty, is_active, agent_rank) VALUES (%s, %s, %s, %s)"
+                values = [
+                    data["name"], 
+                    data["specialty"], 
+                    data.get("is_active", True), 
+                    data["agent_rank"]
+                ]
                 cursor.execute(query, values)
                 new_id = cursor.lastrowid
                 conn.commit()
@@ -35,7 +44,7 @@ class AgentDB:
 
     @staticmethod
     def update_agent(id: int, data: dict):
-        with connection.get_connection() as conn:
+        with DBConnection.get_connection() as conn:
             with conn.cursor() as cursor:
                 list_of_keys = [f"{col}=%s" for col in data]
                 sorted_keys = ", ".join(list_of_keys)
@@ -48,7 +57,7 @@ class AgentDB:
 
     @staticmethod
     def deactivate_agent(id: int):
-        with connection.get_connection() as conn:
+        with DBConnection.get_connection() as conn:
             with conn.cursor() as cursor:
                 query = """UPDATE agents SET is_active = False WHERE id = %s"""
                 cursor.execute(query, (id,))
@@ -58,7 +67,7 @@ class AgentDB:
 
     @staticmethod
     def increment_completed(id: int):
-        with connection.get_connection() as conn:
+        with DBConnection.get_connection() as conn:
             with conn.cursor() as cursor:
                 query = """UPDATE agents SET completed_missions = completed_missions + 1 WHERE id = %s"""
                 cursor.execute(query, (id,))
@@ -68,7 +77,7 @@ class AgentDB:
 
     @staticmethod
     def increment_failed(id: int):
-        with connection.get_connection() as conn:
+        with DBConnection.get_connection() as conn:
             with conn.cursor() as cursor:
                 query = """UPDATE agents SET failed_missions = failed_missions + 1 WHERE id = %s"""
                 cursor.execute(query, (id,))
@@ -80,7 +89,7 @@ class AgentDB:
     def get_agent_performance(id: int):
         agent = AgentDB.get_agent_by_id(id)
         if not agent:
-            return {"message": f"No agent with ID: {id} exists"}
+            return False
         completed = agent["completed_missions"]
         failed = agent["failed_missions"]
         total = completed + failed
@@ -98,7 +107,7 @@ class AgentDB:
 
     @staticmethod
     def count_active_agents():
-        with connection.get_connection() as conn:
+        with DBConnection.get_connection() as conn:
             with conn.cursor(dictionary=True) as cursor:
                 query = """SELECT COUNT(is_active) AS active_agents FROM agents WHERE is_active = True"""
                 cursor.execute(query)
