@@ -143,6 +143,9 @@ def router_complete_mission(id: int):
 
     changed = MissionDB.update_mission_status(id, "COMPLETED")
     if changed:
+        agent_id = mission.get("assigned_agent_id")
+        if agent_id:
+            AgentDB.increment_completed(agent_id)
         logging.info("Mission COMPLETED successfully")
         return {"message": "Mission COMPLETED successfully"}
     else:
@@ -170,6 +173,9 @@ def router_fail_mission(id: int):
 
     changed = MissionDB.update_mission_status(id, "FAILED")
     if changed:
+        agent_id = mission.get("assigned_agent_id")
+        if agent_id:
+            AgentDB.increment_failed(agent_id)
         logging.info("Mission faild successfully")
         return {"message": "Mission faild successfully"}
     else:

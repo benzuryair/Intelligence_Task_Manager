@@ -16,11 +16,17 @@ class DBConnection:
     #
     @staticmethod
     def create_database():
-        with DBConnection.get_connection() as conn:
-            with conn.cursor() as cursor:
-                query = """CREATE DATABASE IF NOT EXISTS Intelligence_db"""
-                cursor.execute(query)
-                conn.commit()
+        conn = mysql.connector.connect(
+            host="localhost",
+            port=3306,
+            user="root",
+            password="1234"
+        )
+        with conn.cursor() as cursor:
+            query = """CREATE DATABASE IF NOT EXISTS Intelligence_db"""
+            cursor.execute(query)
+        conn.commit()
+        conn.close()
 
     @staticmethod
     def create_tables():
