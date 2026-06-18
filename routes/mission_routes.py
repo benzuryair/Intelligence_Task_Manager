@@ -37,7 +37,7 @@ def router_get_all_missions():
 
 
 @router.get("/{id}")
-def router_get_agent_by_id(id: int):
+def router_get_missions_by_id(id: int):
     logging.info("/GET/missions/{id} ")
     mission = MissionDB.get_mission_by_id(id)
     if mission:
