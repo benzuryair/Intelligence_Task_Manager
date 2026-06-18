@@ -15,7 +15,7 @@ class Mission(BaseModel):
     importance: int = Field(ge=1, le=10)
 
 
-@router.post("")
+@router.post("", status_code=201)
 def router_create_mission(body: Mission):
     logging.info("POST/missions")
     body = body.model_dump(exclude_none=True)
