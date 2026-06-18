@@ -124,3 +124,4 @@ And run the main.py file to initialize the database and its tables.
 ```py main.py```
 
 
+`
